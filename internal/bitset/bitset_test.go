@@ -85,3 +85,43 @@ func TestBitsetCopy(t *testing.T) {
 	t.Log("Origin", bs)
 	t.Log("Copy", bs2)
 }
+
+func TestBitMove(t *testing.T) {
+	var a uint64 = 0
+	a--
+	t.Log("-1 for unint64", a)
+	a >>= 1
+	t.Log("-1 >>1 for unint64", a)
+}
+
+func TestNumberOfLeadingZeros(t *testing.T) {
+	var a uint64 = 1
+	n := numberOfLeadingZeros(a)
+	if n != 63 {
+		t.Error("n != 63", n)
+	}
+	for n > 0 {
+		n--
+		a <<= 1
+		if n != numberOfLeadingZeros(a) {
+			t.Error(numberOfLeadingZeros(a), "!=", n)
+		}
+		t.Log(a, "numberOfLeadingZeros", numberOfLeadingZeros(a))
+	}
+}
+
+func TestNumberOfTrailingZeros(t *testing.T) {
+	var a uint64 = 1
+	n := numberOfTrailingZeros(a)
+	if n != 0 {
+		t.Error("n != 0", n)
+	}
+	for n < 64 {
+		n++
+		a <<= 1
+		if n != numberOfTrailingZeros(a) {
+			t.Error(numberOfTrailingZeros(a), "!=", n)
+		}
+		t.Log(a, "numberOfTrailingZeros", numberOfTrailingZeros(a))
+	}
+}

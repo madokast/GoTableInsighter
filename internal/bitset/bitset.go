@@ -23,10 +23,6 @@ func New(capacity int) bitset {
 	return bitset{make([]word, wordNumber)}
 }
 
-func Of(words []word) bitset {
-	return bitset{words}
-}
-
 func (bs bitset) IsSubSetOf(super bitset) bool {
 	min := utils.Min(len(bs.words), len(super.words))
 	for wi := 0; wi < min; wi++ {
@@ -170,25 +166,92 @@ func (bs bitset) String() string {
 }
 
 func numberOfLeadingZeros(i uint64) int {
+	/*
+	    if (i == 0)
+	       return 64;
+	   int n = 1;
+	   int x = (int)(i >>> 32);
+	   if (x == 0) { n += 32; x = (int)i; }
+	   if (x >>> 16 == 0) { n += 16; x <<= 16; }
+	   if (x >>> 24 == 0) { n +=  8; x <<=  8; }
+	   if (x >>> 28 == 0) { n +=  4; x <<=  4; }
+	   if (x >>> 30 == 0) { n +=  2; x <<=  2; }
+	   n -= x >>> 31;
+	   return n;
+	*/
+
 	if i == 0 {
 		return 64
 	}
-	n := 0
-	for i&hightest == 0 {
-		n += 1
-		i <<= 1
+	n := 1
+	x := (uint32)(i >> 32)
+	if x == 0 {
+		n += 32
+		x = (uint32)(i)
 	}
+	if x>>16 == 0 {
+		n += 16
+		x <<= 16
+	}
+	if x>>24 == 0 {
+		n += 8
+		x <<= 8
+	}
+	if x>>28 == 0 {
+		n += 4
+		x <<= 4
+	}
+	if x>>30 == 0 {
+		n += 2
+		x <<= 2
+	}
+	n -= (int)(x >> 31)
 	return n
 }
 
 func numberOfTrailingZeros(i uint64) int {
+	/*
+	   if (i == 0) return 64;
+	   int n = 63;
+	   y = (int)i; if (y != 0) { n = n -32; x = y; } else x = (int)(i>>>32);
+	   y = x <<16; if (y != 0) { n = n -16; x = y; }
+	   y = x << 8; if (y != 0) { n = n - 8; x = y; }
+	   y = x << 4; if (y != 0) { n = n - 4; x = y; }
+	   y = x << 2; if (y != 0) { n = n - 2; x = y; }
+	   return n - ((x << 1) >>> 31);
+	*/
+	var x uint32 = 0
+	var y uint32 = 0
 	if i == 0 {
 		return 64
 	}
-	n := 0
-	for i&1 == 0 {
-		n += 1
-		i >>= 1
+	var n uint32 = 63
+	y = (uint32)(i)
+	if y != 0 {
+		n = n - 32
+		x = y
+	} else {
+		x = (uint32)(i >> 32)
 	}
-	return n
+	y = x << 16
+	if y != 0 {
+		n = n - 16
+		x = y
+	}
+	y = x << 8
+	if y != 0 {
+		n = n - 8
+		x = y
+	}
+	y = x << 4
+	if y != 0 {
+		n = n - 4
+		x = y
+	}
+	y = x << 2
+	if y != 0 {
+		n = n - 2
+		x = y
+	}
+	return (int)(n - ((x << 1) >> 31))
 }
